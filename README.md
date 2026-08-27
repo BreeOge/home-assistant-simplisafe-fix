@@ -1,20 +1,32 @@
 # Home Assistant SimpliSafe Fix
 
-Temporary HACS-installable backport for Home Assistant Core 2026.8.3.
+Temporary HACS-installable dependency override for Home Assistant Core 2026.8.3.
 
-This repository mirrors Home Assistant's built-in `simplisafe` integration from Core 2026.8.3 and changes the `simplisafe-python` requirement from `2024.01.0` to `2026.06.0` to include the upstream fix for camera WebSocket events that omit `_links["playback/hls"]`.
+This custom component is a thin wrapper around Home Assistant's built-in `simplisafe` integration. It delegates runtime code back to the stock Home Assistant integration while changing the Python dependency from `simplisafe-python==2024.01.0` to `simplisafe-python==2026.06.0`.
 
-## Why this exists
-
-Home Assistant Core 2026.8.3 can log:
+The newer library contains the upstream fix for SimpliSafe camera WebSocket events that omit `_links["playback/hls"]`, which otherwise causes Home Assistant to log:
 
 ```
 Unexpected error in websocket loop: 'playback/hls'
 KeyError: 'playback/hls'
 ```
 
-Home Assistant's development branch updated the SimpliSafe dependency to `simplisafe-python==2026.06.0` on 2026-08-27. This repository is intended only as a temporary backport until an official Home Assistant release containing that dependency update is installed.
+Home Assistant's development branch changed the official SimpliSafe dependency to `simplisafe-python==2026.06.0` on 2026-08-27. This repository is intended as a temporary backport until an official Home Assistant release containing that change is installed.
 
-## Important
+## Installation with HACS
 
-This custom component overrides Home Assistant's built-in `simplisafe` integration while installed. Remove it after upgrading to an official Home Assistant release that includes the newer dependency.
+1. Add this repository to HACS as a custom repository of type **Integration**.
+2. Install **SimpliSafe Fix**.
+3. Restart Home Assistant.
+4. Verify the startup log shows the custom SimpliSafe integration warning and that the `playback/hls` traceback no longer occurs.
+
+Your existing SimpliSafe config entry is reused; do not delete or recreate it.
+
+## Removal
+
+After Home Assistant ships the official dependency update:
+
+1. Remove **SimpliSafe Fix** in HACS.
+2. Restart Home Assistant.
+
+Home Assistant will return to its built-in `simplisafe` integration.
